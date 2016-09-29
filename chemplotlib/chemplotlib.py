@@ -23,31 +23,44 @@ def normalize_spectrum(spectrum):
     x, y = spectrum
     return np.array([x, y / np.max(y)])
 
-def stacked_spectra_plot(ocean_optics_spectra_fnames, show=False):
+def stacked_spectra_plot(fnames, labels=None, offset=1.1, show=False):
     """Create a stacked spectrum plot for several ocean optics spectra
     
     Given an iterable of filenames to ocean optics spectra, this will
-    stack all of them into a relative intensity plot in the order given
+    stack all of them into a relative intensity plot in the order given.
 
-    Note that this function does not call show unless show=True (parameter),
-    allowing you to further customize the output via pyplot before displaying
-    it. e.g. pl.title('My title'); show()
+    Change offset to vary the vertical spacing between each spectrum. The
+    label parameter, if given is an iterable of labels to go in the legend
+
+    If show=True, the plot will be displayed.
     """
 
-    spectra = map(read_ocean_optics_spectrometer, ocean_optics_spectra_fnames)
+    spectra = map(read_ocean_optics_spectrometer, fnames)
 
-    normalized = map(normalize_spectrum, spectra)
+    # normalize if offset is nonzero, for not-to-scale visuals
 
-    for i, spectrum in enumerate(normalized):
+    if offset != 0:
+        spectra = map(normalize_spectrum, spectra)
+
+    for i, spectrum in enumerate(spectra):
         x, y = spectrum
-        pl.plot(x, y + 1.1 * i, label='Spectrum {}'.format(i))
+        pl.plot(
+            x,
+            y + offset * i,
+            label=labels[i] if labels else 'Spectrum {}'.format(i)
+        )
 
     pl.xlim(xmin=250)
 
-    pl.yticks((), ())
-    pl.ylim(ymin=-0.2)
+    # If the offset is 0, then don't get rid of the y axis (signal)
+    # units. If the offset is nonzero, then get rid of them since they
+    # no long have any meaning
 
-    pl.legend(fontsize=12)
+    if offset != 0:
+        pl.yticks((), ())
+        pl.ylim(ymin=-0.2)
+
+    pl.legend(fontsize=16)
     pl.xlabel('$\lambda$ (nm)', fontsize=16)
     pl.ylabel('Normalized Absorbance', fontsize=16)
 
