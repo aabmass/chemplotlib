@@ -18,11 +18,15 @@ setup(
     license = "BSD",
     keywords = "chemistry spectra",
     # url = "http://packages.python.org/an_example_pypi_project",
-    packages=['chemplotlib'],
     long_description=read('README'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
         "License :: OSI Approved :: BSD License",
     ],
+
+    packages=['chemplotlib'],
+    entry_points = {
+        'gui_scripts': ['plot_ocean_optics=chemplotlib.plot_ocean_optics:main'],
+    },
 )
