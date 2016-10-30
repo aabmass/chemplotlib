@@ -1,16 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as pl
+import re
 
 def read_ocean_optics_spectrometer(fname):
     """Returns numpy array with lambda, signal for an ocean optics spectrum
     
     Give the filename to an ocean optics collected spectrum (tab delimited), this
-    reads the file and gives a numpy array back
+    reads the file and gives a numpy array back. This method will detect if
+    there is a header and skip over it
     """
+
+    # regex to match on lines when reading in data to skip headers
+    r = re.compile(r'^[0-9]+\.[0-9]+\t+')
 
     with open(fname, 'r') as spectrum_file:
         data = [tuple(float(val.strip()) for val in line.split('\t'))
-                for line in spectrum_file]
+                for line in spectrum_file if r.match(line)]
 
         # return a numpy array
         return np.array(data).T
