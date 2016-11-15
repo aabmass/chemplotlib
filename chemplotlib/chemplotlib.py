@@ -11,11 +11,13 @@ def read_ocean_optics_spectrometer(fname):
     """
 
     # regex to match on lines when reading in data to skip headers
-    r = re.compile(r'^[0-9]+\.[0-9]+\t+')
+    valid_regex = re.compile(r'^[0-9]+\.[0-9]+\t+')
+    split_regex = re.compile(r'\s+')
 
     with open(fname, 'r') as spectrum_file:
-        data = [tuple(float(val.strip()) for val in line.split('\t'))
-                for line in spectrum_file if r.match(line)]
+        data = [tuple(float(val) for val in
+            split_regex.split(line.strip())) for line in spectrum_file
+            if valid_regex.match(line)]
 
         # return a numpy array
         return np.array(data).T
